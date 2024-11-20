@@ -17,6 +17,10 @@ let scrollCount = 0;
 let startY = 0;
 let endY = 0;
 
+// Prevent default scroll behavior for both wheel and touch interactions
+window.addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
+window.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
+
 window.addEventListener("touchstart", (e) => {
   startY = e.touches[0].clientY;
 });

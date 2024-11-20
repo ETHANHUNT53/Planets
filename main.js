@@ -13,6 +13,56 @@ camera.position.z = 9;
 let lastWheelTime = 0;
 const throttleDelay = 2000;
 let scrollCount = 0;
+
+let startY = 0;
+let endY = 0;
+
+window.addEventListener("touchstart", (e) => {
+  startY = e.touches[0].clientY;
+});
+
+window.addEventListener("touchend", (e) => {
+  endY = e.changedTouches[0].clientY;
+
+  // Calculate the swipe distance and determine direction
+  const deltaY = startY - endY;
+
+  if (Math.abs(deltaY) > 50) { // Threshold to detect swipe
+    const direction = deltaY > 0 ? "down" : "up";
+    handleSwipe(direction);
+  }
+});
+
+function handleSwipe(direction) {
+  const currentTime = Date.now();
+  if (currentTime - lastWheelTime >= throttleDelay) {
+    lastWheelTime = currentTime;
+    scrollCount = (scrollCount + 1) % 4;
+
+    // Trigger planet rotation and heading animation
+    const headings = document.querySelectorAll(".heading");
+    gsap.to(headings, {
+      duration: 1,
+      y: `-=${100}%`,
+      ease: "power2.inOut",
+    });
+
+    gsap.to(spheres.rotation, {
+      duration: 1,
+      y: `-=${Math.PI / 2}`,
+      ease: "power2.inOut",
+    });
+
+    if (scrollCount === 0) {
+      gsap.to(headings, {
+        duration: 1,
+        y: `0`,
+        ease: "power2.inOut",
+      });
+    }
+  }
+}
+
 function throttledWheelHandler(event){
   const currentTime = Date.now();
   if(currentTime - lastWheelTime >= throttleDelay){
